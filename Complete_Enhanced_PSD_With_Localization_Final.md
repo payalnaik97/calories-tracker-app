@@ -221,6 +221,16 @@ POST /calories/test-data - Generate sample data (development)
 - **FR-005.4**: Progressive loading and error states
 - **FR-005.5**: Keyboard navigation support
 
+### 4.6 FR-006: Accessibility for Specially-Abled Users
+- **FR-006.1**: Screen reader compatibility with ARIA labels and landmarks
+- **FR-006.2**: Voice-to-text input for calorie entry descriptions
+- **FR-006.3**: High contrast mode with customizable color schemes
+- **FR-006.4**: Text scaling support up to 200% without horizontal scrolling
+- **FR-006.5**: Alternative text descriptions for all images and charts
+- **FR-006.6**: Audio feedback for critical actions and notifications
+- **FR-006.7**: Simplified navigation mode for cognitive accessibility
+- **FR-006.8**: Touch gesture alternatives for users with motor impairments
+
 ---
 
 ## 5. Non-Functional Requirements
@@ -259,6 +269,16 @@ POST /calories/test-data - Generate sample data (development)
 - **NFR-005.3**: Intuitive navigation without training
 - **NFR-005.4**: Clear error messages and user feedback
 - **NFR-005.5**: Touch targets minimum 44px × 44px
+
+### 5.6 Accessibility Requirements (NFR-006)
+- **NFR-006.1**: WCAG 2.1 AA compliance with automated testing
+- **NFR-006.2**: Screen reader support (NVDA, JAWS, VoiceOver) with < 2s response time
+- **NFR-006.3**: Keyboard navigation with visible focus indicators and skip links
+- **NFR-006.4**: Color contrast ratio ≥ 4.5:1 for normal text, ≥ 3:1 for large text
+- **NFR-006.5**: Audio descriptions and captions for multimedia content
+- **NFR-006.6**: Compatible with assistive technologies (switch navigation, eye tracking)
+- **NFR-006.7**: Cognitive accessibility with consistent navigation and clear language
+- **NFR-006.8**: Motor accessibility with alternative input methods and customizable controls
 
 ---
 
@@ -347,6 +367,49 @@ US-014: Quick Access
 As a frequent user
 I want to quickly access the most common features
 So that I can efficiently manage my daily logging
+```
+
+### 6.6 Epic 6: Accessibility User Stories
+```
+US-015: Screen Reader Support
+As a visually impaired user
+I want the application to work seamlessly with screen readers
+So that I can independently track my calorie intake
+
+US-016: Voice Input Capability
+As a user with motor impairments
+I want to input calorie data using voice commands
+So that I can log entries without typing
+
+US-017: High Contrast Interface
+As a user with visual sensitivities
+I want customizable high contrast color schemes
+So that I can use the app comfortably with my visual needs
+
+US-018: Keyboard Navigation
+As a user who cannot use a mouse
+I want to navigate the entire application using only keyboard
+So that I can access all features independently
+
+US-019: Text Scaling Support
+As a user with vision difficulties
+I want to scale text up to 200% without losing functionality
+So that I can read content clearly
+
+US-020: Audio Feedback
+As a user with cognitive or attention difficulties
+I want audio confirmations for important actions
+So that I can be confident my entries are recorded correctly
+
+US-021: Simplified Interface
+As a user with cognitive impairments
+I want a simplified navigation mode with clear instructions
+So that I can use the app without confusion
+
+US-022: Alternative Input Methods
+As a user with diverse motor abilities
+I want multiple ways to interact with the application
+So that I can choose the method that works best for me
 ```
 
 ---
@@ -596,6 +659,57 @@ The Feature Prioritization Matrix uses the MoSCoW method (Must-Have, Should-Have
 - Charts render within 1 second for datasets up to 365 points
 - Image upload processes within 5 seconds
 
+### 9.6 Accessibility Acceptance Criteria (AC-006)
+
+#### 9.6.1 Screen Reader Compatibility
+✅ **Assistive Technology Support**:
+- All interactive elements have proper ARIA labels and roles
+- Screen readers can navigate through all content logically
+- Form fields have associated labels and validation messages
+- Charts and images have meaningful alternative text descriptions
+- Navigation landmarks are properly identified (main, nav, aside)
+- Loading states and dynamic content changes are announced
+- Error messages are immediately read by screen readers
+
+#### 9.6.2 Keyboard Navigation
+✅ **Keyboard Accessibility**:
+- All interactive elements are reachable via keyboard (Tab/Shift+Tab)
+- Focus indicators are clearly visible (2px border, high contrast)
+- Skip links allow users to bypass repetitive navigation
+- Modal dialogs trap focus and return to trigger element on close
+- Dropdown menus and forms work with arrow keys and Enter/Space
+- No keyboard traps prevent users from navigating away
+- Logical tab order follows visual layout and content hierarchy
+
+#### 9.6.3 Visual Accessibility
+✅ **Visual Design Standards**:
+- Color contrast ratios meet WCAG 2.1 AA standards (4.5:1 normal, 3:1 large text)
+- High contrast mode provides enhanced visibility options
+- Text scales up to 200% without horizontal scrolling or loss of functionality
+- UI elements maintain minimum touch target size of 44px × 44px
+- Information is not conveyed by color alone (icons, text labels)
+- Focus indicators are visible against all background colors
+
+#### 9.6.4 Cognitive Accessibility
+✅ **Cognitive Support Features**:
+- Simplified navigation mode reduces visual complexity
+- Clear, consistent language throughout the interface
+- Progress indicators show completion status for multi-step tasks
+- Audio feedback confirms successful actions and important changes
+- Error messages provide clear instructions for correction
+- Help text and tooltips explain complex functionality
+- User can pause, stop, or control auto-playing content
+
+#### 9.6.5 Motor Accessibility
+✅ **Alternative Input Methods**:
+- Voice-to-text input works for all text fields
+- Touch gestures have keyboard/voice alternatives
+- Drag-and-drop functionality has accessible alternatives
+- Time limits can be extended or disabled
+- Accidental activation can be undone or confirmed
+- Large click targets accommodate users with limited dexterity
+- Customizable controls adapt to individual motor abilities
+
 ---
 
 ## 10. Testing Plan
@@ -704,6 +818,48 @@ describe('Complete User Journey', () => {
 - Image upload stress testing (50 simultaneous uploads)
 - Database performance with 10,000+ entries per user
 - Chart rendering performance with large datasets
+
+### 10.6 Accessibility Testing Plan
+
+#### 10.6.1 Automated Accessibility Testing
+```javascript
+describe('Accessibility Compliance', () => {
+  test('WCAG 2.1 AA compliance on all pages', async () => {
+    const results = await axe(document);
+    expect(results.violations).toHaveLength(0);
+  });
+
+  test('color contrast meets standards', async () => {
+    const contrastResults = await contrastChecker('.primary-text');
+    expect(contrastResults.ratio).toBeGreaterThan(4.5);
+  });
+
+  test('keyboard navigation covers all interactions', () => {
+    cy.tabForward(); // Custom command to test tab navigation
+    cy.get('[data-testid="add-entry-btn"]').should('be.focused');
+    cy.pressEnter();
+    cy.get('[data-testid="entry-modal"]').should('be.visible');
+  });
+});
+```
+
+#### 10.6.2 Screen Reader Testing
+- **NVDA Testing**: Complete user flows with Windows screen reader
+- **JAWS Testing**: Critical path verification with professional screen reader  
+- **VoiceOver Testing**: macOS and iOS compatibility testing
+- **TalkBack Testing**: Android accessibility verification
+
+#### 10.6.3 Manual Accessibility Testing
+- **Keyboard-only navigation**: Complete application usage without mouse
+- **High contrast mode**: Usability testing with enhanced visual settings
+- **Text scaling**: Functionality testing at 200% text size
+- **Voice control**: Testing with Dragon NaturallySpeaking and platform voice controls
+
+#### 10.6.4 Assistive Technology Compatibility
+- **Switch navigation**: Testing with external switch devices
+- **Eye tracking**: Compatibility with eye-tracking input systems
+- **Voice commands**: Custom voice command integration testing
+- **Alternative keyboards**: Testing with specialized input devices
 
 ---
 
